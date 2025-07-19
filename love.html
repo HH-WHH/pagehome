@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我们的恋爱时光 | 一周年纪念</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #ffebee 0%, #f8bbd0 100%);
+            color: #5a3d5c;
+            line-height: 1.6;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 100%;
+            padding: 20px;
+        }
+        
+        /* 封面部分 */
+        .cover {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .cover::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://images.unsplash.com/photo-1516487200032-8532cb558261?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80') no-repeat center center/cover;
+            opacity: 0.7;
+            z-index: -1;
+        }
+        
+        .cover h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            color: #7b1fa2;
+            animation: fadeInDown 1.5s ease;
+        }
+        
+        .cover p {
+            font-size: 1.5rem;
+            max-width: 600px;
+            margin-bottom: 30px;
+            animation: fadeInUp 1.5s ease 0.5s both;
+        }
+        
+        .heart-icon {
+            font-size: 3rem;
+            color: #e91e63;
+            animation: heartbeat 1.5s infinite;
+            margin: 20px 0;
+        }
+        
+        .scroll-down {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 2rem;
+            color: #7b1fa2;
+            animation: bounce 2s infinite;
+        }
+        
+        /* 时间轴部分 */
+        .timeline {
+            position: relative;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        
+        .timeline::after {
+            content: '';
+            position: absolute;
+            width: 6px;
+            background-color: #e91e63;
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            margin-left: -3px;
+            border-radius: 10px;
+        }
+        
+        .timeline-item {
+            padding: 20px 40px;
+            position: relative;
+            width: 50%;
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 0.8s ease;
+        }
+        
+        .timeline-item.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .timeline-item:nth-child(odd) {
+            left: 0;
+        }
+        
+        .timeline-item:nth-child(even) {
+            left: 50%;
+        }
+        
+        .timeline-content {
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            position: relative;
+            transition: transform 0.3s ease;
+        }
+        
+        .timeline-content:hover {
+            transform: translateY(-5px);
+        }
+        
+        .timeline-content::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            right: -10px;
+            background-color: white;
+            top: 30px;
+            transform: rotate(45deg);
+            z-index: -1;
+        }
+        
+        .timeline-item:nth-child(even) .timeline-content::after {
+            left: -10px;
+            right: auto;
+        }
+        
+        .date {
+            color: #e91e63;
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .date i {
+            margin-right: 10px;
+        }
+        
+        .timeline-content h3 {
+            margin-bottom: 15px;
+            color: #7b1fa2;
+        }
+        
+        .photo-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin: 15px 0;
+        }
+        
+        .photo-grid img {
+            width: 100%;
+            border-radius: 10px;
+            aspect-ratio: 1/1;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .photo-grid img:hover {
+            transform: scale(1.05);
+        }
+        
+        .memory-text {
+            background: #f8f0fb;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            font-style: italic;
+            border-left: 3px solid #e91e63;
+        }
+        
+        /* 音乐播放器 */
+        .music-player {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 50px;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            width: 60px;
+            height: 60px;
+            overflow: hidden;
+            transition: all 0.5s ease;
+        }
+        
+        .music-player.expanded {
+            width: 300px;
+        }
+        
+        .play-btn {
+            background: #e91e63;
+            color: white;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+        
+        .player-info {
+            padding: 0 15px;
+            width: 0;
+            overflow: hidden;
+            transition: width 0.5s ease;
+        }
+        
+        .music-player.expanded .player-info {
+            width: 200px;
+        }
+        
+        .player-info h4 {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-bottom: 5px;
+            color: #7b1fa2;
+        }
+        
+        .player-info p {
+            font-size: 0.9rem;
+            color: #777;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        /* 页脚部分 */
+        .footer {
+            text-align: center;
+            padding: 40px 20px;
+            background: rgba(123, 31, 162, 0.1);
+            margin-top: 50px;
+            border-radius: 20px 20px 0 0;
+        }
+        
+        .footer h2 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            color: #7b1fa2;
+        }
+        
+        .love-quote {
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin: 0 auto 30px;
+            font-style: italic;
+        }
+        
+        .future-plans {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-top: 30px;
+        }
+        
+        .plan-card {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            width: 180px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .plan-card:hover {
+            transform: translateY(-10px);
+        }
+        
+        .plan-card i {
+            font-size: 2.5rem;
+            color: #e91e63;
+            margin-bottom: 15px;
+        }
+        
+        /* 动画效果 */
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes heartbeat {
+            0% {
+                transform: scale(1);
+            }
+            25% {
+                transform: scale(1.1);
+            }
+            50% {
+                transform: scale(1);
+            }
+            75% {
+                transform: scale(1.1);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+        
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0) translateX(-50%);
+            }
+            40% {
+                transform: translateY(-20px) translateX(-50%);
+            }
+            60% {
+                transform: translateY(-10px) translateX(-50%);
+            }
+        }
+        
+        /* 响应式调整 */
+        @media (max-width: 768px) {
+            .cover h1 {
+                font-size: 2.5rem;
+            }
+            
+            .cover p {
+                font-size: 1.2rem;
+            }
+            
+            .timeline::after {
+                left: 31px;
+            }
+            
+            .timeline-item {
+                width: 100%;
+                padding-left: 70px;
+                padding-right: 25px;
+                left: 0 !important;
+            }
+            
+            .timeline-item:nth-child(even) .timeline-content::after {
+                left: -10px;
+                right: auto;
+            }
+            
+            .timeline-content::after {
+                left: -10px !important;
+                right: auto !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 音乐播放器 -->
+    <div class="music-player">
+        <div class="play-btn">
+            <i class="fas fa-play"></i>
+        </div>
+        <div class="player-info">
+            <h4>Perfect</h4>
+            <p>Ed Sheeran</p>
+        </div>
+    </div>
+    
+    <div class="container">
+        <!-- 封面部分 -->
+        <section class="cover">
+            <h1>我们的恋爱时光</h1>
+            <div class="heart-icon">
+                <i class="fas fa-heart"></i>
+            </div>
+            <p>从初遇到相知，365天的点点滴滴<br>记录我们共同走过的美好旅程</p>
+            <div class="scroll-down">
+                <i class="fas fa-chevron-down"></i>
+            </div>
+        </section>
+        
+        <!-- 时间轴部分 -->
+        <section class="timeline">
+            <!-- 时间轴项 1 -->
+            <div class="timeline-item">
+                <div class="timeline-content">
+                    <div class="date">
+                        <i class="far fa-calendar-alt"></i> 2023年7月15日
+                    </div>
+                    <h3>初次相遇</h3>
+                    <p>那个夏天的午后，在咖啡厅的偶遇改变了我们的人生轨迹。</p>
+                    <div class="photo-grid">
+                        <img src="https://images.unsplash.com/photo-1495195134817-aeb325a55b65?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="初次相遇">
+                        <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="第一次约会">
+                    </div>
+                    <div class="memory-text">
+                        "你的笑容像夏日的阳光，瞬间融化了我的心。"
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 时间轴项 2 -->
+            <div class="timeline-item">
+                <div class="timeline-content">
+                    <div class="date">
+                        <i class="far fa-calendar-alt"></i> 2023年8月20日
+                    </div>
+                    <h3>第一次旅行</h3>
+                    <p>我们一起去海边，看日出日落，在沙滩上写下彼此的名字。</p>
+                    <div class="photo-grid">
+                        <img src="https://images.unsplash.com/photo-1505228395891-9a51e7e86bf6?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="海边旅行">
+                        <img src="https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="沙滩">
+                    </div>
+                    <div class="memory-text">
+                        "海浪声是我们爱的背景音乐，海风传递着我们的低语。"
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 时间轴项 3 -->
+            <div class="timeline-item">
+                <div class="timeline-content">
+                    <div class="date">
+                        <i class="far fa-calendar-alt"></i> 2023年10月1日
+                    </div>
+                    <h3>第一次一起过生日</h3>
+                    <p>我为你准备的惊喜派对，看到你感动的泪水，我知道这一切都值得。</p>
+                    <div class="photo-grid">
+                        <img src="https://images.unsplash.com/photo-1530103862676-de8c9debad1d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="生日派对">
+                        <img src="https://images.unsplash.com/photo-1511795409834-ef04bbd61622?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="生日蛋糕">
+                    </div>
+                    <div class="memory-text">
+                        "你的笑容是我最好的生日礼物，愿每年都能为你庆祝。"
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 时间轴项 4 -->
+            <div class="timeline-item">
+                <div class="timeline-content">
+                    <div class="date">
+                        <i class="far fa-calendar-alt"></i> 2023年12月24日
+                    </div>
+                    <h3>第一个圣诞节</h3>
+                    <p>在飘雪的圣诞夜，我们交换礼物，在圣诞树下许下爱的誓言。</p>
+                    <div class="photo-grid">
+                        <img src="https://images.unsplash.com/photo-1543083115-638c32cd3d58?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="圣诞节">
+                        <img src="https://images.unsplash.com/photo-1518707399486-6d702a84ff00?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="圣诞礼物">
+                    </div>
+                    <div class="memory-text">
+                        "圣诞节的灯光下，你的眼睛比任何星星都要明亮。"
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 时间轴项 5 -->
+            <div class="timeline-item">
+                <div class="timeline-content">
+                    <div class="date">
+                        <i class="far fa-calendar-alt"></i> 2024年2月14日
+                    </div>
+                    <h3>第一个情人节</h3>
+                    <p>尽管异地，但我们的心却从未分开。视频通话中的玫瑰依然芬芳。</p>
+                    <div class="photo-grid">
+                        <img src="https://images.unsplash.com/photo-1516487200032-8532cb558261?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="情人节玫瑰">
+                        <img src="https://images.unsplash.com/photo-1529254479751-fbacb4c7b7c5?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="视频通话">
+                    </div>
+                    <div class="memory-text">
+                        "距离无法阻隔真爱，我们的心始终紧紧相连。"
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 时间轴项 6 -->
+            <div class="timeline-item">
+                <div class="timeline-content">
+                    <div class="date">
+                        <i class="far fa-calendar-alt"></i> 2024年5月1日
+                    </div>
+                    <h3>春日踏青</h3>
+                    <p>在花海中漫步，捕捉春天的气息，定格我们的美好瞬间。</p>
+                    <div class="photo-grid">
+                        <img src="https://images.unsplash.com/photo-1500051638674-ff996a0ec29e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="春日踏青">
+                        <img src="https://images.unsplash.com/photo-1490750967868-88aa4486c946?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="花海">
+                    </div>
+                    <div class="memory-text">
+                        "春天的花会凋谢，但我们的爱情永远盛开。"
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- 页脚部分 -->
+        <section class="footer">
+            <h2>一周年快乐！</h2>
+            <p class="love-quote">"365天，8760小时，525600分钟，每一刻都因为有你而变得特别。"</p>
+            
+            <div class="future-plans">
+                <div class="plan-card">
+                    <i class="fas fa-heart"></i>
+                    <h3>更多旅行</h3>
+                    <p>探索世界的每个角落</p>
+                </div>
+                <div class="plan-card">
+                    <i class="fas fa-home"></i>
+                    <h3>共同的家</h3>
+                    <p>打造属于我们的空间</p>
+                </div>
+                <div class="plan-card">
+                    <i class="fas fa-ring"></i>
+                    <h3>永远在一起</h3>
+                    <p>未来的每一步都有彼此</p>
+                </div>
+            </div>
+        </section>
+    </div>
+    
+    <script>
+        // 音乐播放器功能
+        const musicPlayer = document.querySelector('.music-player');
+        const playBtn = document.querySelector('.play-btn');
+        const playIcon = playBtn.querySelector('i');
+        const playerInfo = document.querySelector('.player-info');
+        
+        let isPlaying = false;
+        let isExpanded = false;
+        
+        // 模拟音乐播放
+        playBtn.addEventListener('click', function() {
+            isPlaying = !isPlaying;
+            playIcon.classList.toggle('fa-play', !isPlaying);
+            playIcon.classList.toggle('fa-pause', isPlaying);
+            
+            if (isPlaying) {
+                expandPlayer();
+            }
+        });
+        
+        // 展开播放器
+        function expandPlayer() {
+            if (!isExpanded) {
+                musicPlayer.classList.add('expanded');
+                isExpanded = true;
+                
+                // 5秒后自动收起
+                setTimeout(() => {
+                    if (isExpanded) {
+                        musicPlayer.classList.remove('expanded');
+                        isExpanded = false;
+                    }
+                }, 5000);
+            }
+        }
+        
+        // 点击播放器其他区域也展开
+        musicPlayer.addEventListener('click', function(e) {
+            if (e.target !== playBtn && !playBtn.contains(e.target)) {
+                expandPlayer();
+            }
+        });
+        
+        // 滚动显示时间轴项
+        const timelineItems = document.querySelectorAll('.timeline-item');
+        
+        function checkScroll() {
+            timelineItems.forEach(item => {
+                const itemTop = item.getBoundingClientRect().top;
+                const windowHeight = window.innerHeight;
+                
+                if (itemTop < windowHeight * 0.9) {
+                    item.classList.add('visible');
+                }
+            });
+        }
+        
+        // 初始检查
+        checkScroll();
+        
+        // 滚动事件监听
+        window.addEventListener('scroll', checkScroll);
+        
+        // 封面滚动指示点击
+        document.querySelector('.scroll-down').addEventListener('click', function() {
+            window.scrollTo({
+                top: window.innerHeight,
+                behavior: 'smooth'
+            });
+        });
+        
+        // 图片点击放大（简化版）
+        const images = document.querySelectorAll('.photo-grid img');
+        images.forEach(img => {
+            img.addEventListener('click', function() {
+                alert('实际应用中这里会显示大图');
+            });
+        });
+    </script>
+</body>
+</html>
